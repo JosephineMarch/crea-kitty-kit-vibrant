@@ -15,13 +15,13 @@
     --primary: 336 85 68; /* #FF6B8A - Deep pink */
     --primary-foreground: 255 255 255;
 
-    /* Accent Colors for Cards and Elements */
-    --accent-pink: 336 85 68; /* #FF6B8A */
-    --accent-peach: 20 100 70; /* #FF8A50 */
-    --accent-yellow: 45 100 65; /* #FFD700 */
-    --accent-purple: 270 50 70; /* #9966CC */
-    --accent-mint: 160 50 70; /* #66CC99 */
-    --accent-coral: 10 85 70; /* #FF7F7F */
+    /* Accent Colors for Cards and Elements - Inspired by modern finance UI */
+    --accent-pink: 336 75 65; /* Softer pink */
+    --accent-peach: 25 85 68; /* Muted peach */
+    --accent-yellow: 45 75 68; /* Toned down yellow */
+    --accent-purple: 260 45 68; /* Soft purple */
+    --accent-mint: 160 40 65; /* Muted mint */
+    --accent-coral: 15 70 68; /* Softer coral */
 
     /* Card Backgrounds */
     --card: 255 255 255;
