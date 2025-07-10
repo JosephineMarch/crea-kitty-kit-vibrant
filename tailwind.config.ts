@@ -44,10 +44,10 @@ export default {
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))',
-					pink: 'hsl(336, 85%, 68%)',
-					peach: 'hsl(20, 100%, 70%)',
+					pink: 'hsl(340, 82%, 52%)', // Hot Pink
+					peach: 'hsl(28, 80%, 95%)', // Peach Whip
 					yellow: 'hsl(45, 100%, 65%)',
-					purple: 'hsl(270, 50%, 70%)',
+					purple: 'hsl(250, 80%, 95%)', // Light Purple
 					mint: 'hsl(160, 50%, 70%)',
 					coral: 'hsl(10, 85%, 70%)'
 				},
@@ -61,11 +61,11 @@ export default {
 				}
 			},
 			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)',
-				'2xl': '1.5rem',
-				'3xl': '2rem'
+				lg: '1.5rem',
+				md: '1rem',
+				sm: '0.5rem',
+				'2xl': '2rem',
+				'3xl': '2.5rem'
 			},
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif']

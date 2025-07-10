@@ -1,23 +1,36 @@
-import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
-import { CreaCard } from "./CreaCard";
-import { IconContainer } from "./IconContainer";
+
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Plus, Minus, DollarSign } from "lucide-react";
 
 interface TransactionFormProps {
   onClose: () => void;
   onSubmit: (transaction: { name: string; amount: number; type: 'income' | 'expense' }) => void;
+  // isOpen prop to control the dialog visibility
+  isOpen: boolean; 
 }
 
-export const TransactionForm = ({ onClose, onSubmit }: TransactionFormProps) => {
+export const TransactionForm = ({ onClose, onSubmit, isOpen }: TransactionFormProps) => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<'income' | 'expense'>('expense');
 
+  useEffect(() => {
+    if (isOpen) {
+      setName("");
+      setAmount("");
+      setType('expense');
+    }
+  }, [isOpen]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && amount) {
+    if (name.trim() && amount) {
       onSubmit({
-        name,
+        name: name.trim(),
         amount: parseFloat(amount),
         type
       });
@@ -26,94 +39,93 @@ export const TransactionForm = ({ onClose, onSubmit }: TransactionFormProps) => 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <CreaCard className="w-full max-w-sm">
-        <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">Add Transaction</h3>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg p-8 bg-gray-50 rounded-3xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-gray-800 flex items-center">
+            <DollarSign className="mr-3 h-7 w-7 text-accent-mint" />
+            Add New Transaction
+          </DialogTitle>
+        </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Transaction Type */}
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setType('income')}
-              className={`flex-1 flex items-center justify-center p-3 rounded-2xl transition-colors ${
-                type === 'income' 
-                  ? 'bg-accent-mint text-white' 
-                  : 'bg-gray-100 text-gray-600'
-              }`}
-            >
-              <Plus size={16} className="mr-2" />
-              Income
-            </button>
-            <button
-              type="button"
-              onClick={() => setType('expense')}
-              className={`flex-1 flex items-center justify-center p-3 rounded-2xl transition-colors ${
-                type === 'expense' 
-                  ? 'bg-accent-coral text-white' 
-                  : 'bg-gray-100 text-gray-600'
-              }`}
-            >
-              <Minus size={16} className="mr-2" />
-              Expense
-            </button>
-          </div>
-
-          {/* Description */}
+        <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
-            <input
-              type="text"
+            <Label className="font-semibold text-gray-600 mb-2 block">Transaction Type</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                type="button"
+                onClick={() => setType('income')}
+                variant={type === 'income' ? 'default' : 'outline'}
+                className={`py-6 text-base rounded-2xl flex items-center justify-center space-x-2 transition-all ${type === 'income' ? 'bg-accent-mint hover:bg-accent-mint/90' : 'border-gray-300'}`}
+              >
+                <Plus size={20} />
+                <span>Income</span>
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setType('expense')}
+                variant={type === 'expense' ? 'default' : 'outline'}
+                className={`py-6 text-base rounded-2xl flex items-center justify-center space-x-2 transition-all ${type === 'expense' ? 'bg-accent-coral hover:bg-accent-coral/90 text-white' : 'border-gray-300'}`}
+              >
+                <Minus size={20} />
+                <span>Expense</span>
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <Label htmlFor="transaction-name" className="font-semibold text-gray-600">Description</Label>
+            <Input
+              id="transaction-name"
+              placeholder="e.g., Coffee, Salary"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter description"
-              className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="rounded-xl p-3 mt-2 text-base"
               required
             />
           </div>
 
-          {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Amount (S/.)
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
-                S/.
+            <Label htmlFor="transaction-amount" className="font-semibold text-gray-600">Amount</Label>
+            <div className="relative mt-2">
+               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-semibold">
+                $
               </span>
-              <input
+              <Input
+                id="transaction-amount"
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="rounded-xl p-3 pl-8 text-base"
                 required
               />
             </div>
           </div>
-
-          {/* Buttons */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
+        </form>
+        
+        <DialogFooter className="mt-8">
+          <div className="flex space-x-4 w-full">
+            <Button
+              variant="outline"
               onClick={onClose}
-              className="flex-1 py-3 rounded-2xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+              className="flex-1 rounded-xl py-3 text-base font-semibold border-gray-300"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="flex-1 py-3 rounded-2xl bg-primary text-white font-medium hover:opacity-90 transition-opacity"
+              onClick={handleSubmit}
+              disabled={!name.trim() || !amount}
+              className="flex-1 rounded-xl py-3 text-base font-semibold bg-accent-pink hover:bg-accent-pink/90"
             >
               Add Transaction
-            </button>
+            </Button>
           </div>
-        </form>
-      </CreaCard>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

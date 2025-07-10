@@ -1,17 +1,31 @@
 
-import { TrendingUp, TrendingDown, Plus, DollarSign, CreditCard, ShoppingBag } from "lucide-react";
+import { Plus, DollarSign, CreditCard, ShoppingBag, MoreVertical, BarChart2 } from "lucide-react";
 import { CreaCard } from "./CreaCard";
 import { IconContainer } from "./IconContainer";
 import { TransactionForm } from "./TransactionForm";
 import { useState } from "react";
 
+// Mock data for the chart
+const chartData = [
+  { month: "Jan", expense: 120, income: 150 },
+  { month: "Feb", expense: 140, income: 180 },
+  { month: "Mar", expense: 110, income: 210 },
+  { month: "Apr", expense: 180, income: 190 },
+  { month: "May", expense: 250, income: 220 },
+  { month: "Jun", expense: 210, income: 240 },
+  { month: "Jul", expense: 190, income: 260 },
+];
+
 export const FinanceScreen = () => {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [activeTab, setActiveTab] = useState('Expense');
+  const [activeTime, setActiveTime] = useState('M');
+
   const [transactions, setTransactions] = useState([
-    { name: "Salary", amount: "+S/ 12,800", date: "Dec 1", type: "income", icon: DollarSign, color: "mint" },
-    { name: "Groceries", amount: "-S/ 340", date: "Dec 8", type: "expense", icon: ShoppingBag, color: "coral" },
-    { name: "Coffee Shop", amount: "-S/ 48", date: "Dec 8", type: "expense", icon: CreditCard, color: "purple" },
-    { name: "Freelance", amount: "+S/ 1,800", date: "Dec 7", type: "income", icon: DollarSign, color: "yellow" },
+    { name: "Salary", amount: "+$ 12,800", date: "Dec 1", type: "income", icon: DollarSign, color: "mint" as const },
+    { name: "Photography", amount: "-$ 280", date: "Dec 8", type: "expense", icon: ShoppingBag, color: "purple" as const },
+    { name: "Flight Ticket", amount: "-$ 475", date: "Dec 8", type: "expense", icon: CreditCard, color: "pink" as const },
+    { name: "Oori Shop", amount: "-$ 128", date: "Dec 7", type: "expense", icon: ShoppingBag, color: "yellow" as const },
   ]);
 
   const handleAddTransaction = (newTransaction: { name: string; amount: number; type: 'income' | 'expense' }) => {
@@ -21,100 +35,88 @@ export const FinanceScreen = () => {
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       type: newTransaction.type,
       icon: newTransaction.type === 'income' ? DollarSign : CreditCard,
-      color: newTransaction.type === 'income' ? 'mint' : 'coral'
+      color: (newTransaction.type === 'income' ? 'mint' : 'coral') as any,
     };
     setTransactions([transaction, ...transactions]);
   };
 
-  const monthlyData = [
-    { month: "Aug", income: 2800, expenses: 2200 },
-    { month: "Sep", income: 3100, expenses: 2400 },
-    { month: "Oct", income: 2900, expenses: 2100 },
-    { month: "Nov", income: 3200, expenses: 2600 },
-    { month: "Dec", income: 3500, expenses: 2300 },
-  ];
+  const totalExpense = 2486; // Example data
 
   return (
-    <div className="p-6 pb-24 space-y-6">
-      {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Finance</h1>
-        <p className="text-gray-600">Track your financial health</p>
-      </div>
-
-      {/* Balance Card */}
-      <CreaCard variant="gradient-pink">
-        <div className="text-center mb-6">
-          <p className="text-white/80 mb-2">Total Balance</p>
-          <h2 className="text-4xl font-bold mb-4">S/ 34,968</h2>
-          <div className="flex justify-center space-x-6">
-            <div className="text-center">
-              <p className="text-sm opacity-80">Income</p>
-              <p className="text-lg font-semibold">+S/ 14,600</p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm opacity-80">Expenses</p>
-              <p className="text-lg font-semibold">-S/ 9,360</p>
-            </div>
+    <div className="bg-gray-50 min-h-screen p-6 pb-24 space-y-8">
+      
+      {/* Statistics Card */}
+      <CreaCard className="p-6 bg-white shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl font-bold text-gray-800">Statistics</h1>
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={() => setActiveTab('Expense')}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === 'Expense' ? 'bg-accent-pink text-white' : 'bg-gray-100 text-gray-700'}`}
+            >
+              Expense
+            </button>
+            <button 
+              onClick={() => setActiveTab('Income')}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === 'Income' ? 'bg-accent-pink text-white' : 'bg-gray-100 text-gray-700'}`}
+            >
+              Income
+            </button>
           </div>
         </div>
-      </CreaCard>
 
-      {/* Statistics Chart */}
-      <CreaCard>
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Monthly Overview</h3>
-        <div className="space-y-4">
-          {monthlyData.map((data, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600 w-12">{data.month}</span>
-              <div className="flex-1 mx-4">
-                <div className="relative h-8 bg-gray-100 rounded-full overflow-hidden">
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-accent-mint rounded-full"
-                    style={{ width: `${(data.income / 4000) * 100}%` }}
-                  />
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-accent-coral rounded-full opacity-70"
-                    style={{ width: `${(data.expenses / 4000) * 100}%` }}
-                  />
-                </div>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <p className="text-3xl font-bold text-gray-800">$ {totalExpense.toLocaleString()}</p>
+            <p className="text-sm text-gray-500">Total {activeTab}</p>
+          </div>
+          <div className="flex bg-gray-100 rounded-full p-1">
+            {['W', 'M', 'Y'].map(time => (
+              <button 
+                key={time}
+                onClick={() => setActiveTime(time)}
+                className={`px-3 py-1 rounded-full text-sm font-semibold transition-colors ${activeTime === time ? 'bg-white shadow' : 'text-gray-600'}`}
+              >
+                {time}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bar Chart */}
+        <div className="h-40 flex items-end justify-between">
+          {chartData.map(data => (
+            <div key={data.month} className="text-center w-1/12">
+              <div className="bg-accent-purple/20 h-full rounded-2xl flex items-end">
+                <div 
+                  className={`w-full rounded-2xl transition-all duration-500 ${data.month === 'May' ? 'bg-accent-pink' : 'bg-accent-purple'}`}
+                  style={{ height: `${(data.expense / 300) * 100}%` }}
+                />
               </div>
-               <div className="text-right">
-                 <p className="text-sm font-medium text-accent-mint">S/ {data.income}</p>
-                 <p className="text-sm text-accent-coral">S/ {data.expenses}</p>
-               </div>
+              <p className="text-xs text-gray-400 mt-2">{data.month}</p>
             </div>
           ))}
         </div>
-        
-        <div className="flex justify-center space-x-6 mt-4 pt-4 border-t border-gray-200">
-          <div className="flex items-center text-sm">
-            <div className="w-3 h-3 bg-accent-mint rounded-full mr-2" />
-            Income
-          </div>
-          <div className="flex items-center text-sm">
-            <div className="w-3 h-3 bg-accent-coral rounded-full mr-2" />
-            Expenses
-          </div>
-        </div>
       </CreaCard>
 
-      {/* Recent Transactions */}
-      <div>
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Recent Transactions</h3>
+      {/* History */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center px-2">
+          <h2 className="text-lg font-bold text-gray-700">History</h2>
+          <button className="text-accent-pink font-semibold text-sm">See all</button>
+        </div>
+        
         <div className="space-y-3">
           {transactions.map((transaction, index) => (
-            <CreaCard key={index} className="flex items-center p-4">
-              <IconContainer variant={transaction.color as any} size="sm">
-                <transaction.icon size={16} />
+            <CreaCard key={index} className="flex items-center p-4 bg-white shadow-sm">
+              <IconContainer variant={transaction.color} size="md" className="mr-4">
+                <transaction.icon size={20} />
               </IconContainer>
-              <div className="ml-4 flex-1">
-                <p className="font-medium text-gray-800">{transaction.name}</p>
-                <p className="text-sm text-gray-600">{transaction.date}</p>
+              <div className="flex-1">
+                <p className="font-semibold text-gray-800">{transaction.name}</p>
+                <p className="text-sm text-gray-500">{transaction.date}</p>
               </div>
-              <p className={`font-bold ${
-                transaction.type === 'income' ? 'text-accent-mint' : 'text-accent-coral'
-              }`}>
+              <p className={`font-bold text-gray-800`}>
                 {transaction.amount}
               </p>
             </CreaCard>
@@ -122,17 +124,13 @@ export const FinanceScreen = () => {
         </div>
       </div>
 
-      {/* Add Transaction */}
-      <CreaCard 
-        className="text-center cursor-pointer hover:scale-[1.02] transition-transform"
+      {/* Floating Action Button */}
+      <button
         onClick={() => setShowTransactionForm(true)}
+        className="fixed bottom-24 right-6 bg-accent-pink text-white rounded-full p-4 shadow-lg hover:scale-110 transition-transform z-10"
       >
-        <IconContainer variant="pink" className="mx-auto mb-3">
-          <Plus size={20} />
-        </IconContainer>
-        <p className="font-medium text-gray-800">Add Transaction</p>
-        <p className="text-sm text-gray-600">Record income or expense</p>
-      </CreaCard>
+        <Plus size={24} />
+      </button>
 
       {/* Transaction Form Modal */}
       {showTransactionForm && (
