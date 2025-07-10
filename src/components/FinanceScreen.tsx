@@ -2,14 +2,29 @@
 import { TrendingUp, TrendingDown, Plus, DollarSign, CreditCard, ShoppingBag } from "lucide-react";
 import { CreaCard } from "./CreaCard";
 import { IconContainer } from "./IconContainer";
+import { TransactionForm } from "./TransactionForm";
+import { useState } from "react";
 
 export const FinanceScreen = () => {
-  const transactions = [
-    { name: "Salary", amount: "+$3,200", date: "Dec 1", type: "income", icon: DollarSign, color: "mint" },
-    { name: "Groceries", amount: "-$85", date: "Dec 8", type: "expense", icon: ShoppingBag, color: "coral" },
-    { name: "Coffee Shop", amount: "-$12", date: "Dec 8", type: "expense", icon: CreditCard, color: "purple" },
-    { name: "Freelance", amount: "+$450", date: "Dec 7", type: "income", icon: DollarSign, color: "yellow" },
-  ];
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [transactions, setTransactions] = useState([
+    { name: "Salary", amount: "+S/ 12,800", date: "Dec 1", type: "income", icon: DollarSign, color: "mint" },
+    { name: "Groceries", amount: "-S/ 340", date: "Dec 8", type: "expense", icon: ShoppingBag, color: "coral" },
+    { name: "Coffee Shop", amount: "-S/ 48", date: "Dec 8", type: "expense", icon: CreditCard, color: "purple" },
+    { name: "Freelance", amount: "+S/ 1,800", date: "Dec 7", type: "income", icon: DollarSign, color: "yellow" },
+  ]);
+
+  const handleAddTransaction = (newTransaction: { name: string; amount: number; type: 'income' | 'expense' }) => {
+    const transaction = {
+      name: newTransaction.name,
+      amount: `${newTransaction.type === 'income' ? '+' : '-'}S/ ${newTransaction.amount.toFixed(2)}`,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      type: newTransaction.type,
+      icon: newTransaction.type === 'income' ? DollarSign : CreditCard,
+      color: newTransaction.type === 'income' ? 'mint' : 'coral'
+    };
+    setTransactions([transaction, ...transactions]);
+  };
 
   const monthlyData = [
     { month: "Aug", income: 2800, expenses: 2200 },
@@ -31,15 +46,15 @@ export const FinanceScreen = () => {
       <CreaCard variant="gradient-pink">
         <div className="text-center mb-6">
           <p className="text-white/80 mb-2">Total Balance</p>
-          <h2 className="text-4xl font-bold mb-4">$8,742</h2>
+          <h2 className="text-4xl font-bold mb-4">S/ 34,968</h2>
           <div className="flex justify-center space-x-6">
             <div className="text-center">
               <p className="text-sm opacity-80">Income</p>
-              <p className="text-lg font-semibold">+$3,650</p>
+              <p className="text-lg font-semibold">+S/ 14,600</p>
             </div>
             <div className="text-center">
               <p className="text-sm opacity-80">Expenses</p>
-              <p className="text-lg font-semibold">-$2,340</p>
+              <p className="text-lg font-semibold">-S/ 9,360</p>
             </div>
           </div>
         </div>
@@ -64,10 +79,10 @@ export const FinanceScreen = () => {
                   />
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-accent-mint">${data.income}</p>
-                <p className="text-sm text-accent-coral">${data.expenses}</p>
-              </div>
+               <div className="text-right">
+                 <p className="text-sm font-medium text-accent-mint">S/ {data.income}</p>
+                 <p className="text-sm text-accent-coral">S/ {data.expenses}</p>
+               </div>
             </div>
           ))}
         </div>
@@ -108,13 +123,24 @@ export const FinanceScreen = () => {
       </div>
 
       {/* Add Transaction */}
-      <CreaCard className="text-center cursor-pointer hover:scale-[1.02] transition-transform">
+      <CreaCard 
+        className="text-center cursor-pointer hover:scale-[1.02] transition-transform"
+        onClick={() => setShowTransactionForm(true)}
+      >
         <IconContainer variant="pink" className="mx-auto mb-3">
           <Plus size={20} />
         </IconContainer>
         <p className="font-medium text-gray-800">Add Transaction</p>
         <p className="text-sm text-gray-600">Record income or expense</p>
       </CreaCard>
+
+      {/* Transaction Form Modal */}
+      {showTransactionForm && (
+        <TransactionForm
+          onClose={() => setShowTransactionForm(false)}
+          onSubmit={handleAddTransaction}
+        />
+      )}
     </div>
   );
 };

@@ -14,6 +14,8 @@ export const RoutinesScreen = () => {
     { name: "Plan Tomorrow", completed: false, time: "10:00 PM", color: "yellow" },
   ];
 
+  const [routinesForDate, setRoutinesForDate] = useState(routines);
+
   const generateCalendarDays = () => {
     const today = new Date();
     const currentMonth = today.getMonth();
@@ -34,6 +36,29 @@ export const RoutinesScreen = () => {
     }
     
     return days;
+  };
+
+  const getRoutinesForDate = (date: number) => {
+    // Mock data - in real app this would come from backend
+    const routinesByDate: Record<number, typeof routines> = {
+      [new Date().getDate()]: routines,
+      16: [
+        { name: "Morning Yoga", completed: false, time: "7:30 AM", color: "mint" },
+        { name: "Project Review", completed: true, time: "10:00 AM", color: "purple" },
+        { name: "Team Meeting", completed: false, time: "2:00 PM", color: "coral" },
+      ],
+      17: [
+        { name: "Gym Session", completed: false, time: "6:00 AM", color: "coral" },
+        { name: "Client Call", completed: false, time: "11:00 AM", color: "yellow" },
+        { name: "Design Review", completed: true, time: "3:00 PM", color: "purple" },
+      ]
+    };
+    return routinesByDate[date] || [];
+  };
+
+  const handleDateSelect = (date: number) => {
+    setSelectedDate(date);
+    setRoutinesForDate(getRoutinesForDate(date));
   };
 
   return (
@@ -57,40 +82,42 @@ export const RoutinesScreen = () => {
                 {day}
               </div>
             ))}
-            {generateCalendarDays().map((day, index) => (
-              <button
-                key={index}
-                onClick={() => day && setSelectedDate(day)}
-                className={`
-                  py-2 text-sm rounded-lg transition-colors
-                  ${day === null ? '' : 
-                    day === selectedDate 
-                      ? 'bg-primary text-white font-bold' 
-                      : day === new Date().getDate()
-                        ? 'bg-accent-yellow text-gray-800 font-medium'
-                        : 'hover:bg-gray-100 text-gray-700'
-                  }
-                `}
-              >
-                {day}
-              </button>
-            ))}
+             {generateCalendarDays().map((day, index) => (
+               <button
+                 key={index}
+                 onClick={() => day && handleDateSelect(day)}
+                 className={`
+                   py-2 text-sm rounded-lg transition-colors
+                   ${day === null ? '' : 
+                     day === selectedDate 
+                       ? 'bg-primary text-white font-bold' 
+                       : day === new Date().getDate()
+                         ? 'bg-accent-yellow text-gray-800 font-medium'
+                         : 'hover:bg-gray-100 text-gray-700'
+                   }
+                 `}
+               >
+                 {day}
+               </button>
+             ))}
           </div>
         </div>
       </CreaCard>
 
       {/* Today's Routines */}
       <CreaCard variant="gradient-purple">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">Today's Routines</h3>
-          <div className="text-sm opacity-90">
-            {routines.filter(r => r.completed).length} of {routines.length} done
-          </div>
-        </div>
-        
-        <div className="bg-white/20 rounded-2xl p-4">
-          <div className="space-y-3">
-            {routines.map((routine, index) => (
+         <div className="flex justify-between items-center mb-4">
+           <h3 className="text-xl font-bold">
+             {selectedDate === new Date().getDate() ? "Today's Routines" : `Routines for ${selectedDate}`}
+           </h3>
+           <div className="text-sm opacity-90">
+             {routinesForDate.filter(r => r.completed).length} of {routinesForDate.length} done
+           </div>
+         </div>
+         
+         <div className="bg-white/20 rounded-2xl p-4">
+           <div className="space-y-3">
+             {routinesForDate.map((routine, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <button className={`
